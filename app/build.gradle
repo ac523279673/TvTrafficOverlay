@@ -1,0 +1,39 @@
+apply plugin: 'com.android.application'
+
+android {
+    namespace 'com.tvtraffic.overlay'
+    compileSdk 34
+
+    defaultConfig {
+        applicationId "com.tvtraffic.overlay"
+        minSdk 23
+        targetSdk 33
+        versionCode 1
+        versionName "1.0"
+    }
+
+    buildTypes {
+        debug {
+            minifyEnabled false
+            applicationIdSuffix ""
+        }
+        release {
+            minifyEnabled false
+            // 仓库不包含签名材料：如需发布，请自行添加 signingConfigs 后引用
+        }
+    }
+
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_17
+        targetCompatibility JavaVersion.VERSION_17
+    }
+
+    lint {
+        abortOnError false
+        checkReleaseBuilds false
+    }
+}
+
+dependencies {
+    // 纯 framework 实现，无第三方依赖
+}

@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- 排列模式下被操作按钮的高亮底：琥珀色描边 + 淡底，与普通按钮的青色焦点态区分开 -->
+<shape xmlns:android="http://schemas.android.com/apk/res/android"
+    android:shape="rectangle">
+    <solid android:color="#33FFB74D" />
+    <stroke
+        android:width="2dp"
+        android:color="#FFFFB74D" />
+    <corners android:radius="10dp" />
+</shape>

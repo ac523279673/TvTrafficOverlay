@@ -1,0 +1,20 @@
+# Gradle / Android 构建产物
+build/
+.gradle/
+*.iml
+.idea/
+local.properties
+captures/
+.externalNativeBuild/
+.cxx/
+
+# 签名材料（绝对不要提交）
+*.jks
+*.keystore
+keystore.properties
+signing.properties
+
+# 系统垃圾
+.DS_Store
+Thumbs.db
+*.log

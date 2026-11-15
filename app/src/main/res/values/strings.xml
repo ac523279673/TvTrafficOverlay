@@ -1,0 +1,6 @@
+<resources>
+    <string name="app_name">TV 流量悬浮窗</string>
+    <string name="usage_title">应用流量排行</string>
+    <string name="noti_channel">悬浮窗常驻</string>
+    <string name="noti_text">正在显示实时速率</string>
+</resources>
