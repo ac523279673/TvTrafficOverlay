@@ -1,0 +1,102 @@
+<resources>
+    <!-- 中文（简体）。默认资源为英文，见 values/strings.xml -->
+    <string name="app_name">TV 流量悬浮窗</string>
+    <string name="usage_title">应用流量排行</string>
+
+    <!-- 主界面 -->
+    <string name="main_subtitle">桌面置顶 · 背景透明 · 上行下行实时速率</string>
+
+    <string name="section_permissions">权限状态</string>
+    <string name="perm_overlay_checking">悬浮窗权限：检测中…</string>
+    <string name="perm_usage_checking">应用流量统计权限：检测中…</string>
+    <string name="perm_overlay_fmt">悬浮窗权限：%1$s</string>
+    <string name="perm_usage_fmt">应用流量统计权限：%1$s</string>
+    <string name="status_granted">已授权</string>
+    <string name="status_denied">未授权</string>
+
+    <string name="btn_overlay_on">关闭悬浮窗</string>
+    <string name="btn_overlay_off">开启悬浮窗</string>
+    <string name="btn_grant_overlay">授予悬浮窗权限</string>
+    <string name="btn_grant_usage">授予流量统计权限</string>
+    <string name="btn_usage">应用流量排行</string>
+    <string name="btn_autostart_on">开机自启：开</string>
+    <string name="btn_autostart_off">开机自启：关</string>
+
+    <string name="section_position">悬浮窗位置</string>
+    <string name="corner_tl">左上</string>
+    <string name="corner_bl">左下</string>
+    <string name="corner_tr">右上</string>
+    <string name="corner_br">右下</string>
+    <string name="nudge_left">左移</string>
+    <string name="nudge_right">右移</string>
+    <string name="nudge_up">上移</string>
+    <string name="nudge_down">下移</string>
+    <string name="btn_center">居中</string>
+    <string name="btn_step_fmt">步长：%1$ddp</string>
+    <string name="step_default">步长：8dp</string>
+    <string name="pos_free">自由位置</string>
+
+    <string name="section_style">显示样式</string>
+    <string name="btn_size_minus">字号 -</string>
+    <string name="btn_size_plus">字号 +</string>
+    <string name="btn_bg_translucent">背景：半透明</string>
+    <string name="btn_bg_transparent">背景：透明</string>
+    <string name="btn_lock_on">锁定位置：开</string>
+    <string name="btn_lock_off">锁定位置：关</string>
+
+    <string name="section_color">文字颜色</string>
+    <string name="label_down">下行</string>
+    <string name="label_up">上行</string>
+
+    <string name="hint_pos_fmt">当前位置：%1$s　字号：%2$dsp</string>
+    <string name="hint_move">用「左移 / 右移 / 上移 / 下移」把悬浮窗摆到屏幕任意位置；点「步长」在 2 / 8 / 24 / 48 / 120dp 之间切换，「居中」一键回到屏幕中央。</string>
+    <string name="hint_arrange">长按任一位置按钮的 OK 键，可以左右调整按钮排列。</string>
+    <string name="hint_no_focus">悬浮窗不接管遥控器，不影响任何应用的按键操作。</string>
+    <string name="hint_font">字体：MiSans（小米开源字体，免费商用）</string>
+    <string name="hint_arrange_mode_fmt">排列模式：「%1$s」正在调整\n左右方向键与相邻按钮交换位置，按 OK 完成并保存，按返回键取消。\n按钮只在它所在的那一行里移动。</string>
+
+    <string name="toast_overlay_on">悬浮窗已开启</string>
+    <string name="toast_overlay_off">已关闭悬浮窗</string>
+    <string name="toast_need_overlay">请先开启悬浮窗</string>
+    <string name="toast_need_usage">请先授予「应用流量统计」权限</string>
+    <string name="toast_missing_overlay_perm">缺少悬浮窗权限，请先授予</string>
+    <string name="toast_open_overlay_page">请打开「允许显示在其他应用上层」</string>
+    <string name="toast_open_usage_page">请找到本应用并允许访问使用记录</string>
+    <string name="toast_no_settings_page">本机没有该设置页，请用 adb 授权（见下方说明）</string>
+    <string name="toast_arrange">左右键调整位置，OK 完成，返回键取消</string>
+
+    <string name="adb_hint_fmt">电视/盒子通常没有「显示在其他应用上层」和「使用情况访问」的设置入口，\n用同一局域网的电脑执行下面两条命令即可（需先开启 ADB 调试）：\n\nadb connect 电视IP:5555\nadb shell appops set %1$s SYSTEM_ALERT_WINDOW allow\nadb shell appops set %1$s GET_USAGE_STATS allow\n\n授予后回到本页，状态会变成「已授权」。</string>
+
+    <!-- 前台服务通知 -->
+    <string name="noti_channel">悬浮窗常驻</string>
+    <string name="noti_text">正在显示实时速率</string>
+
+    <!-- 应用流量排行 -->
+    <string name="btn_range_boot">本次开机</string>
+    <string name="btn_range_7d">近 7 天</string>
+    <string name="btn_range_30d">近 30 天</string>
+    <string name="label_sort">排序</string>
+    <string name="sort_traffic_desc">流量 大→小</string>
+    <string name="sort_traffic_asc">流量 小→大</string>
+    <string name="sort_name_asc">名称 A→Z</string>
+    <string name="sort_name_desc">名称 Z→A</string>
+    <string name="btn_back">返回</string>
+    <string name="usage_empty">没有读到应用列表</string>
+
+    <string name="summary_fmt">统计起点 %1$s　·　共 %2$d 个应用（%3$d 个有流量）　·　下行 %4$s　上行 %5$s　·　合计 %6$s　·　%7$s</string>
+    <string name="source_system">系统统计</string>
+    <string name="source_fallback">仅本次开机（建议授予使用情况访问权限）</string>
+    <string name="load_failed_fmt">读取失败：%1$s</string>
+
+    <string name="dialog_close">关闭</string>
+    <string name="dialog_shared_suffix">（与其他应用共用 uid）</string>
+    <string name="dialog_total_fmt">合计 %1$s</string>
+    <string name="dialog_detail_fmt">下行 %1$s　上行 %2$s</string>
+    <string name="dialog_type_fmt">类型 %1$s</string>
+    <string name="type_system">系统应用</string>
+    <string name="type_user">用户应用</string>
+    <string name="dialog_no_traffic">本期没有产生流量。</string>
+
+    <string name="item_shared_suffix">　· 共用 uid</string>
+    <string name="item_no_traffic">本期无流量</string>
+</resources>

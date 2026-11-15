@@ -1,6 +1,102 @@
 <resources>
-    <string name="app_name">TV 流量悬浮窗</string>
-    <string name="usage_title">应用流量排行</string>
-    <string name="noti_channel">悬浮窗常驻</string>
-    <string name="noti_text">正在显示实时速率</string>
+    <!-- Default locale: English. Chinese lives in values-zh/strings.xml -->
+    <string name="app_name">TV Traffic Overlay</string>
+    <string name="usage_title">App traffic ranking</string>
+
+    <!-- Main screen -->
+    <string name="main_subtitle">Always on top · Transparent · Live up / down speed</string>
+
+    <string name="section_permissions">Permissions</string>
+    <string name="perm_overlay_checking">Overlay permission: checking…</string>
+    <string name="perm_usage_checking">Traffic stats permission: checking…</string>
+    <string name="perm_overlay_fmt">Overlay permission: %1$s</string>
+    <string name="perm_usage_fmt">Traffic stats permission: %1$s</string>
+    <string name="status_granted">granted</string>
+    <string name="status_denied">not granted</string>
+
+    <string name="btn_overlay_on">Hide overlay</string>
+    <string name="btn_overlay_off">Show overlay</string>
+    <string name="btn_grant_overlay">Grant overlay</string>
+    <string name="btn_grant_usage">Grant stats</string>
+    <string name="btn_usage">Traffic ranking</string>
+    <string name="btn_autostart_on">Auto start: on</string>
+    <string name="btn_autostart_off">Auto start: off</string>
+
+    <string name="section_position">Overlay position</string>
+    <string name="corner_tl">Top left</string>
+    <string name="corner_bl">Bottom left</string>
+    <string name="corner_tr">Top right</string>
+    <string name="corner_br">Bottom right</string>
+    <string name="nudge_left">Left</string>
+    <string name="nudge_right">Right</string>
+    <string name="nudge_up">Up</string>
+    <string name="nudge_down">Down</string>
+    <string name="btn_center">Center</string>
+    <string name="btn_step_fmt">Step: %1$ddp</string>
+    <string name="step_default">Step: 8dp</string>
+    <string name="pos_free">free position</string>
+
+    <string name="section_style">Appearance</string>
+    <string name="btn_size_minus">Size -</string>
+    <string name="btn_size_plus">Size +</string>
+    <string name="btn_bg_translucent">Background: translucent</string>
+    <string name="btn_bg_transparent">Background: transparent</string>
+    <string name="btn_lock_on">Lock position: on</string>
+    <string name="btn_lock_off">Lock position: off</string>
+
+    <string name="section_color">Text color</string>
+    <string name="label_down">Download</string>
+    <string name="label_up">Upload</string>
+
+    <string name="hint_pos_fmt">Current: %1$s    Font: %2$dsp</string>
+    <string name="hint_move">Use Left / Right / Up / Down to put the overlay anywhere on screen; Step cycles 2 / 8 / 24 / 48 / 120 dp; Center jumps back to the middle.</string>
+    <string name="hint_arrange">Long-press OK on any position button to rearrange the buttons.</string>
+    <string name="hint_no_focus">The overlay never takes over the remote, so every other app keeps its keys.</string>
+    <string name="hint_font">Font: MiSans (Xiaomi, free for commercial use)</string>
+    <string name="hint_arrange_mode_fmt">Arrange mode: “%1$s” is being moved\nLeft / Right swaps it with a neighbour, OK saves, Back cancels.\nA button only moves inside its own row.</string>
+
+    <string name="toast_overlay_on">Overlay turned on</string>
+    <string name="toast_overlay_off">Overlay turned off</string>
+    <string name="toast_need_overlay">Turn the overlay on first</string>
+    <string name="toast_need_usage">Grant the traffic stats permission first</string>
+    <string name="toast_missing_overlay_perm">Overlay permission is missing, grant it first</string>
+    <string name="toast_open_overlay_page">Turn on “Display over other apps”</string>
+    <string name="toast_open_usage_page">Find this app and allow usage access</string>
+    <string name="toast_no_settings_page">This device has no such settings page, grant it with adb (see below)</string>
+    <string name="toast_arrange">Left / Right to move, OK to save, Back to cancel</string>
+
+    <string name="adb_hint_fmt">TVs and boxes usually have no “Display over other apps” or “Usage access” screen.\nRun these two commands from a computer on the same network (enable ADB debugging first):\n\nadb connect TV_IP:5555\nadb shell appops set %1$s SYSTEM_ALERT_WINDOW allow\nadb shell appops set %1$s GET_USAGE_STATS allow\n\nCome back to this screen and both lines turn green.</string>
+
+    <!-- Foreground service notification -->
+    <string name="noti_channel">Overlay service</string>
+    <string name="noti_text">Showing live speed</string>
+
+    <!-- App usage screen -->
+    <string name="btn_range_boot">Since boot</string>
+    <string name="btn_range_7d">Last 7 days</string>
+    <string name="btn_range_30d">Last 30 days</string>
+    <string name="label_sort">Sort</string>
+    <string name="sort_traffic_desc">Traffic high→low</string>
+    <string name="sort_traffic_asc">Traffic low→high</string>
+    <string name="sort_name_asc">Name A→Z</string>
+    <string name="sort_name_desc">Name Z→A</string>
+    <string name="btn_back">Back</string>
+    <string name="usage_empty">No apps to show</string>
+
+    <string name="summary_fmt">Since %1$s    ·    %2$d apps (%3$d with traffic)    ·    Down %4$s    Up %5$s    ·    Total %6$s    ·    %7$s</string>
+    <string name="source_system">system stats</string>
+    <string name="source_fallback">since boot only (grant usage access)</string>
+    <string name="load_failed_fmt">Read failed: %1$s</string>
+
+    <string name="dialog_close">Close</string>
+    <string name="dialog_shared_suffix"> (shares a uid with other apps)</string>
+    <string name="dialog_total_fmt">Total %1$s</string>
+    <string name="dialog_detail_fmt">Down %1$s    Up %2$s</string>
+    <string name="dialog_type_fmt">Type %1$s</string>
+    <string name="type_system">system app</string>
+    <string name="type_user">user app</string>
+    <string name="dialog_no_traffic">No traffic in this period.</string>
+
+    <string name="item_shared_suffix">    · shared uid</string>
+    <string name="item_no_traffic">No traffic</string>
 </resources>

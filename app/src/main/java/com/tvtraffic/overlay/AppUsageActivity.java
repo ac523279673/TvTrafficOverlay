@@ -61,7 +61,7 @@ public class AppUsageActivity extends Activity {
     private volatile boolean loading = false;
     private volatile boolean alive = true;
 
-    private final Collator collator = Collator.getInstance(Locale.CHINA);
+    private final Collator collator = Collator.getInstance(Locale.getDefault());
 
     private final Runnable refreshTask = new Runnable() {
         @Override
@@ -131,14 +131,14 @@ public class AppUsageActivity extends Activity {
     private void updateRangeButton() {
         switch (mode) {
             case MODE_7D:
-                btnRange.setText("近 7 天");
+                btnRange.setText(R.string.btn_range_7d);
                 break;
             case MODE_30D:
-                btnRange.setText("近 30 天");
+                btnRange.setText(R.string.btn_range_30d);
                 break;
             case MODE_BOOT:
             default:
-                btnRange.setText("本次开机");
+                btnRange.setText(R.string.btn_range_boot);
                 break;
         }
     }
@@ -188,7 +188,7 @@ public class AppUsageActivity extends Activity {
             } catch (Throwable t) {
                 runOnUiThread(() -> {
                     loading = false;
-                    tvSummary.setText("读取失败：" + t.getClass().getSimpleName());
+                    tvSummary.setText(getString(R.string.load_failed_fmt, t.getClass().getSimpleName()));
                 });
                 return;
             }
@@ -287,14 +287,12 @@ public class AppUsageActivity extends Activity {
             rx += u.rx;
             tx += u.tx;
         }
-        String from = new SimpleDateFormat("MM-dd HH:mm", Locale.CHINA).format(new Date(rangeStart));
-        tvSummary.setText("统计起点 " + from + "　·　共 " + data.size() + " 个应用（"
-                + withTraffic + " 个有流量）"
-                + "　·　下行 " + Fmt.volume(rx)
-                + "　上行 " + Fmt.volume(tx)
-                + "　·　合计 " + Fmt.volume(rx + tx)
-                + "　·　" + (AppUsageRepository.lastFromSystemStats
-                        ? "系统统计" : "仅本次开机（建议授予使用情况访问权限）"));
+        String from = new SimpleDateFormat("MM-dd HH:mm", Locale.getDefault())
+                .format(new Date(rangeStart));
+        String source = getString(AppUsageRepository.lastFromSystemStats
+                ? R.string.source_system : R.string.source_fallback);
+        tvSummary.setText(getString(R.string.summary_fmt, from, data.size(), withTraffic,
+                Fmt.volume(rx), Fmt.volume(tx), Fmt.volume(rx + tx), source));
         // 兜底数据明显不全，用橙色提示，避免误以为应用真的没跑流量
         tvSummary.setTextColor(AppUsageRepository.lastFromSystemStats ? 0xFF7E93A8 : 0xFFFFB74D);
     }
@@ -306,17 +304,18 @@ public class AppUsageActivity extends Activity {
 
         StringBuilder msg = new StringBuilder();
         msg.append(u.packageName);
-        if (u.shared) msg.append("（与其他应用共用 uid）");
-        msg.append("\n合计 ").append(Fmt.volume(u.total()));
-        msg.append("\n下行 ").append(Fmt.volume(u.rx))
-                .append("　上行 ").append(Fmt.volume(u.tx));
-        msg.append("\n类型 ").append(u.system ? "系统应用" : "用户应用");
-        if (!u.hasTraffic()) msg.append("\n\n本期没有产生流量。");
+        if (u.shared) msg.append(getString(R.string.dialog_shared_suffix));
+        msg.append('\n').append(getString(R.string.dialog_total_fmt, Fmt.volume(u.total())));
+        msg.append('\n').append(getString(R.string.dialog_detail_fmt,
+                Fmt.volume(u.rx), Fmt.volume(u.tx)));
+        msg.append('\n').append(getString(R.string.dialog_type_fmt,
+                getString(u.system ? R.string.type_system : R.string.type_user)));
+        if (!u.hasTraffic()) msg.append("\n\n").append(getString(R.string.dialog_no_traffic));
 
         AlertDialog dialog = new AlertDialog.Builder(this)
                 .setTitle(nameOf(u))
                 .setMessage(msg.toString())
-                .setPositiveButton("关闭", null)
+                .setPositiveButton(R.string.dialog_close, null)
                 .create();
         // 关掉弹窗后把焦点还给列表，否则遥控器会失去落点
         dialog.setOnDismissListener(d -> {
@@ -375,7 +374,7 @@ public class AppUsageActivity extends Activity {
 
             name.setText(nameOf(u));
             String pkgText = u.packageName;
-            if (u.shared) pkgText = pkgText + "　· 共用 uid";
+            if (u.shared) pkgText = pkgText + getString(R.string.item_shared_suffix);
             pkg.setText(pkgText);
 
             // 流量总和放主位，上下行细分放次位；本期没流量的应用灰显
@@ -386,7 +385,7 @@ public class AppUsageActivity extends Activity {
             total.setText(has ? Fmt.volume(u.total()) : "0 B");
             detail.setText(has
                     ? "↓ " + Fmt.volume(u.rx) + "　↑ " + Fmt.volume(u.tx)
-                    : "本期无流量");
+                    : getString(R.string.item_no_traffic));
 
             return v;
         }

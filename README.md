@@ -1,14 +1,22 @@
 # TV 流量悬浮窗（TvTrafficOverlay）
 
+**简体中文** | [English](README.en.md)
+
 安卓电视 / 电视盒子用的实时网速悬浮窗。背景完全透明、置顶显示，随时看上下行速率，并可按应用统计流量。
 
-纯 Android framework 实现，无任何第三方依赖；源码以 MIT 协议开源。
+纯 Android framework 实现，无任何第三方依赖；源码以 MIT 协议开源。界面中英双语，随系统语言自动切换。
 
 ## 界面预览
 
 | 设置页 | 排列模式 | 应用流量排行 |
 |---|---|---|
 | ![设置页](docs/preview_settings.png) | ![排列模式](docs/preview_arrange.png) | ![排行](docs/preview_usage.png) |
+
+英文界面（系统语言为英文时自动启用）：
+
+| 设置页 | 应用排行 |
+|---|---|
+| ![Settings](docs/preview_settings_en.png) | ![Ranking](docs/preview_usage_en.png) |
 
 悬浮窗本体（透明背景，上行在左、下行在右）：
 
@@ -29,15 +37,16 @@
 | 开机自启 | 上次关闭前是开启状态，开机后自动恢复（可单独关闭）；升级安装后也会自动恢复 |
 | 全局字体 | 内置 MiSans，悬浮窗与设置页统一；数字区锁定宽度，读数跳动时不会左右抖 |
 | 位置锁定 | 防止误触改位置 |
+| 中英双语 | 界面文案全部走资源，中文放 `values-zh`、英文为默认；系统语言是中文就用中文，其它语言用英文 |
 
 ## 安装
 
-到本仓库的 **Releases** 页下载 `TvTrafficOverlay-v1.0.apk`（约 2.5 MB）。也可以自己编译，见文末「自己编译」。
+到本仓库的 **Releases** 页下载 `TvTrafficOverlay-v1.1.apk`（约 2.6 MB）。也可以自己编译，见文末「自己编译」。
 
 装法三种任选：
 
 1. **U 盘**：拷到 U 盘 → 插电视 → 用电视自带的文件管理器打开安装（需允许「安装未知来源应用」）。
-2. **adb**：`adb connect 电视IP:5555` → `adb install -r TvTrafficOverlay-v1.0.apk`
+2. **adb**：`adb connect 电视IP:5555` → `adb install -r TvTrafficOverlay-v1.1.apk`
 3. **电视助手类 App**（当贝助手、沙发管家等）推送安装。
 
 > Release 里的 APK 使用 Android 默认 debug 证书签名，仅适合自行安装。若要分发给他人或上架，请用自己的 keystore 重新签名。
@@ -89,7 +98,8 @@ adb shell appops set com.tvtraffic.overlay GET_USAGE_STATS allow
 - **字体**：`assets/fonts/` 内为 MiSans（Regular + DemiBold），已用 fontTools 做子集化（保留 GB2312 全集 + 拉丁 + 常用符号，共 7544 字符），单字重从 7.6 MB 压到 1.7 MB。
 - **包可见性**：Android 11+ 有包可见性限制，未声明 `QUERY_ALL_PACKAGES` 时 `getInstalledApplications()` / `getPackagesForUid()` 只返回部分应用，列表会缺项。已在清单里声明该权限。
 - **列表构成**：以 `getInstalledApplications()` 为准逐包列出（跳过已停用），流量按 uid 从 NetworkStats 取；一个 uid 多个包时每个包各占一行，标注「共用 uid」。图标与名称做了内存缓存，避免 10 秒自动刷新时反复解析 APK。
-- **排序**：名称排序用 `Collator.getInstance(Locale.CHINA)`，中文按拼音而不是 UTF-16 码位；排序只影响展示，不重新查询。
+- **排序**：名称排序用 `Collator.getInstance()`（跟随系统语言），中文按拼音而不是 UTF-16 码位；排序只影响展示，不重新查询。
+- **多语言**：所有界面文案都在 `strings.xml`，默认资源是英文、`values-zh` 是简体中文，Android 按系统语言自动选。英文比中文长，首行按钮在 1280×720 的电视上会超出可用宽度，所以那一行套了 `HorizontalScrollView`，焦点走到哪就滚到哪。
 
 ## 已知限制
 

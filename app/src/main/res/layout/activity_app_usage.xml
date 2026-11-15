@@ -30,7 +30,7 @@
             style="@style/TvButton"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="本次开机" />
+            android:text="@string/btn_range_boot" />
 
         <Button
             android:id="@+id/btn_back"
@@ -38,7 +38,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginEnd="0dp"
-            android:text="返回" />
+            android:text="@string/btn_back" />
     </LinearLayout>
 
     <!-- 排序菜单：直接点选，不再循环切换 -->
@@ -53,29 +53,29 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginEnd="14dp"
-            android:text="排序"
+            android:text="@string/label_sort"
             android:textColor="#FF7E93A8"
             android:textSize="14sp" />
 
         <TextView
             android:id="@+id/sort_traffic_desc"
             style="@style/SortChip"
-            android:text="流量 大→小" />
+            android:text="@string/sort_traffic_desc" />
 
         <TextView
             android:id="@+id/sort_traffic_asc"
             style="@style/SortChip"
-            android:text="流量 小→大" />
+            android:text="@string/sort_traffic_asc" />
 
         <TextView
             android:id="@+id/sort_name_asc"
             style="@style/SortChip"
-            android:text="名称 A→Z" />
+            android:text="@string/sort_name_asc" />
 
         <TextView
             android:id="@+id/sort_name_desc"
             style="@style/SortChip"
-            android:text="名称 Z→A" />
+            android:text="@string/sort_name_desc" />
     </LinearLayout>
 
     <TextView
@@ -106,7 +106,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center"
-            android:text="没有读到应用列表"
+            android:text="@string/usage_empty"
             android:textColor="#FF6B7F92"
             android:textSize="16sp"
             android:visibility="gone" />

@@ -28,6 +28,12 @@ import java.util.Map;
 
 public class MainActivity extends Activity {
 
+    /** 四角名称，顺序与 Prefs.CORNER_* 一致 */
+    private static final int[] CORNER_LABELS = {
+            R.string.corner_tl, R.string.corner_tr,
+            R.string.corner_br, R.string.corner_bl
+    };
+
     /** 悬浮窗文字可选颜色 */
     private static final int[] PALETTE = {
             0xFFFFFFFF, // 白
@@ -116,7 +122,7 @@ public class MainActivity extends Activity {
         installPositionButton((Button) findViewById(R.id.btn_up), () -> nudge(0, -1));
         installPositionButton((Button) findViewById(R.id.btn_down), () -> nudge(0, 1));
         installPositionButton((Button) findViewById(R.id.btn_center), () -> {
-            if (!OverlayService.moveToCenter()) toast("请先开启悬浮窗");
+            if (!OverlayService.moveToCenter()) toast(R.string.toast_need_overlay);
             updateUi();
         });
         installPositionButton((Button) findViewById(R.id.btn_step), () -> {
@@ -148,7 +154,7 @@ public class MainActivity extends Activity {
 
         findViewById(R.id.btn_usage).setOnClickListener(v -> {
             if (!hasUsageAccess()) {
-                toast("请先授予「应用流量统计」权限");
+                toast(R.string.toast_need_usage);
                 return;
             }
             startActivity(new Intent(this, AppUsageActivity.class));
@@ -176,7 +182,7 @@ public class MainActivity extends Activity {
             long now = System.currentTimeMillis();
             if (now - lastNudgeToastAt > 1500L) {
                 lastNudgeToastAt = now;
-                toast("请先开启悬浮窗");
+                toast(R.string.toast_need_overlay);
             }
             return;
         }
@@ -355,7 +361,7 @@ public class MainActivity extends Activity {
         b.setBackgroundResource(R.drawable.bg_arrange);
         b.requestFocus();
         updateHint();
-        toast("左右键调整位置，OK 完成，返回键取消");
+        toast(R.string.toast_arrange);
     }
 
     /** 排列模式下的按键：左右换位、OK 保存、返回取消，上下与其它键一律吞掉 */
@@ -476,18 +482,18 @@ public class MainActivity extends Activity {
         if (OverlayService.running || prefs.enabled()) {
             OverlayService.stop(this);
             prefs.setEnabled(false);
-            toast("已关闭悬浮窗");
+            toast(R.string.toast_overlay_off);
             btnToggle.postDelayed(this::updateUi, 400);
             return;
         }
         if (!Settings.canDrawOverlays(this)) {
-            toast("缺少悬浮窗权限，请先授予");
+            toast(R.string.toast_missing_overlay_perm);
             openOverlaySettings();
             return;
         }
         OverlayService.start(this);
         prefs.setEnabled(true);
-        toast("悬浮窗已开启");
+        toast(R.string.toast_overlay_on);
         btnToggle.postDelayed(this::updateUi, 400);
     }
 
@@ -501,18 +507,18 @@ public class MainActivity extends Activity {
             Intent i = new Intent(Settings.ACTION_MANAGE_OVERLAY_PERMISSION,
                     Uri.parse("package:" + getPackageName()));
             startActivity(i);
-            toast("请打开「允许显示在其他应用上层」");
+            toast(R.string.toast_open_overlay_page);
         } catch (Exception e) {
-            toast("本机没有该设置页，请用 adb 授权（见下方说明）");
+            toast(R.string.toast_no_settings_page);
         }
     }
 
     private void openUsageSettings() {
         try {
             startActivity(new Intent(Settings.ACTION_USAGE_ACCESS_SETTINGS));
-            toast("请找到本应用并允许访问使用记录");
+            toast(R.string.toast_open_usage_page);
         } catch (Exception e) {
-            toast("本机没有该设置页，请用 adb 授权（见下方说明）");
+            toast(R.string.toast_no_settings_page);
         }
     }
 
@@ -539,41 +545,45 @@ public class MainActivity extends Activity {
         boolean overlayOk = Settings.canDrawOverlays(this);
         boolean usageOk = hasUsageAccess();
 
-        tvOverlayPerm.setText("悬浮窗权限：" + (overlayOk ? "已授权" : "未授权"));
+        tvOverlayPerm.setText(getString(R.string.perm_overlay_fmt, grantText(overlayOk)));
         tvOverlayPerm.setTextColor(overlayOk ? 0xFF6EE7A8 : 0xFFFF7B72);
 
-        tvUsagePerm.setText("应用流量统计权限：" + (usageOk ? "已授权" : "未授权"));
+        tvUsagePerm.setText(getString(R.string.perm_usage_fmt, grantText(usageOk)));
         tvUsagePerm.setTextColor(usageOk ? 0xFF6EE7A8 : 0xFFFF7B72);
 
         boolean on = OverlayService.running || prefs.enabled();
-        btnToggle.setText(on ? "关闭悬浮窗" : "开启悬浮窗");
+        btnToggle.setText(on ? R.string.btn_overlay_on : R.string.btn_overlay_off);
 
-        btnBg.setText(prefs.showBackground() ? "背景：半透明" : "背景：透明");
-        btnLock.setText(prefs.locked() ? "锁定位置：开" : "锁定位置：关");
-        btnAutoStart.setText(prefs.autoStart() ? "开机自启：开" : "开机自启：关");
-        btnStep.setText("步长：" + prefs.stepDp() + "dp");
+        btnBg.setText(prefs.showBackground()
+                ? R.string.btn_bg_translucent : R.string.btn_bg_transparent);
+        btnLock.setText(prefs.locked() ? R.string.btn_lock_on : R.string.btn_lock_off);
+        btnAutoStart.setText(prefs.autoStart()
+                ? R.string.btn_autostart_on : R.string.btn_autostart_off);
+        btnStep.setText(getString(R.string.btn_step_fmt, prefs.stepDp()));
 
         updateHint();
+    }
+
+    private String grantText(boolean granted) {
+        return getString(granted ? R.string.status_granted : R.string.status_denied);
     }
 
     /** 只刷新底部说明文字，微调连发时不重建色板，避免卡顿 */
     private void updateHint() {
         tvHint.setTextSize(14);
         if (arrangeBtn != null) {
-            tvHint.setText("排列模式：「" + arrangeBtn.getText() + "」正在调整\n"
-                    + "左右方向键与相邻按钮交换位置，按 OK 完成并保存，按返回键取消。\n"
-                    + "按钮只在它所在的那一行里移动。");
+            tvHint.setText(getString(R.string.hint_arrange_mode_fmt, arrangeBtn.getText()));
             return;
         }
-        String[] names = {"左上", "右上", "右下", "左下"};
-        String posText = prefs.corner() < 0 ? "自由位置" : names[prefs.corner()];
-        tvHint.setText(adbHint() + "\n\n当前位置：" + posText
-                + "　字号：" + prefs.textSizeSp() + "sp"
-                + "\n用「左移 / 右移 / 上移 / 下移」把悬浮窗摆到屏幕任意位置；"
-                + "点「步长」在 2 / 8 / 24 / 48 / 120dp 之间切换，「居中」一键回到屏幕中央。"
-                + "\n长按任一位置按钮的 OK 键，可以左右调整按钮排列。"
-                + "\n\n悬浮窗不接管遥控器，不影响任何应用的按键操作。"
-                + "\n字体：MiSans（小米开源字体，免费商用）");
+        String posText = prefs.corner() < 0
+                ? getString(R.string.pos_free)
+                : getString(CORNER_LABELS[prefs.corner()]);
+        tvHint.setText(adbHint() + "\n\n"
+                + getString(R.string.hint_pos_fmt, posText, prefs.textSizeSp()) + "\n"
+                + getString(R.string.hint_move) + "\n"
+                + getString(R.string.hint_arrange) + "\n\n"
+                + getString(R.string.hint_no_focus) + "\n"
+                + getString(R.string.hint_font));
     }
 
     // ------------------------------------------------------------ 颜色色板
@@ -634,16 +644,10 @@ public class MainActivity extends Activity {
     }
 
     private String adbHint() {
-        String pkg = getPackageName();
-        return "电视/盒子通常没有「显示在其他应用上层」和「使用情况访问」的设置入口，\n"
-                + "用同一局域网的电脑执行下面两条命令即可（需先开启 ADB 调试）：\n\n"
-                + "adb connect 电视IP:5555\n"
-                + "adb shell appops set " + pkg + " SYSTEM_ALERT_WINDOW allow\n"
-                + "adb shell appops set " + pkg + " GET_USAGE_STATS allow\n\n"
-                + "授予后回到本页，状态会变成「已授权」。";
+        return getString(R.string.adb_hint_fmt, getPackageName());
     }
 
-    private void toast(String msg) {
-        Toast.makeText(this, msg, Toast.LENGTH_SHORT).show();
+    private void toast(int resId) {
+        Toast.makeText(this, resId, Toast.LENGTH_SHORT).show();
     }
 }

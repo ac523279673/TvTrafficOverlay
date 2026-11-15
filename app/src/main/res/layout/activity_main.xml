@@ -26,7 +26,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="4dp"
-            android:text="桌面置顶 · 背景透明 · 上行下行实时速率"
+            android:text="@string/main_subtitle"
             android:textColor="#FF7E93A8"
             android:textSize="14sp" />
 
@@ -34,14 +34,14 @@
             style="@style/SectionTitle"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="权限状态" />
+            android:text="@string/section_permissions" />
 
         <TextView
             android:id="@+id/tv_perm_overlay"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginBottom="4dp"
-            android:text="悬浮窗权限：检测中…"
+            android:text="@string/perm_overlay_checking"
             android:textColor="#FFB8C7D6"
             android:textSize="15sp" />
 
@@ -49,59 +49,67 @@
             android:id="@+id/tv_perm_usage"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="应用流量统计权限：检测中…"
+            android:text="@string/perm_usage_checking"
             android:textColor="#FFB8C7D6"
             android:textSize="15sp" />
 
-        <LinearLayout
+        <!-- 英文文案比中文长，窄屏（1280×720 的电视约 757dp 可用宽度）会放不下，
+             这里允许横向滚动：焦点走到哪个按钮，容器自动滚到哪个 -->
+        <HorizontalScrollView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="14dp"
-            android:orientation="horizontal">
+            android:scrollbars="none">
 
-            <Button
-                android:id="@+id/btn_toggle"
-                style="@style/TvButton"
+            <LinearLayout
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:minWidth="190dp"
-                android:text="开启悬浮窗" />
+                android:orientation="horizontal">
 
-            <Button
-                android:id="@+id/btn_grant_overlay"
-                style="@style/TvButton"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="授予悬浮窗权限" />
+                <Button
+                    android:id="@+id/btn_toggle"
+                    style="@style/TvButton"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:minWidth="190dp"
+                    android:text="@string/btn_overlay_off" />
 
-            <Button
-                android:id="@+id/btn_grant_usage"
-                style="@style/TvButton"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="授予流量统计权限" />
+                <Button
+                    android:id="@+id/btn_grant_overlay"
+                    style="@style/TvButton"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/btn_grant_overlay" />
 
-            <Button
-                android:id="@+id/btn_usage"
-                style="@style/TvButton"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="应用流量排行" />
+                <Button
+                    android:id="@+id/btn_grant_usage"
+                    style="@style/TvButton"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/btn_grant_usage" />
 
-            <Button
-                android:id="@+id/btn_autostart"
-                style="@style/TvButton"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginEnd="0dp"
-                android:text="开机自启：开" />
-        </LinearLayout>
+                <Button
+                    android:id="@+id/btn_usage"
+                    style="@style/TvButton"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/btn_usage" />
+
+                <Button
+                    android:id="@+id/btn_autostart"
+                    style="@style/TvButton"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginEnd="0dp"
+                    android:text="@string/btn_autostart_on" />
+            </LinearLayout>
+        </HorizontalScrollView>
 
         <TextView
             style="@style/SectionTitle"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="悬浮窗位置" />
+            android:text="@string/section_position" />
 
         <LinearLayout
             android:id="@+id/row_corners"
@@ -114,21 +122,21 @@
                 style="@style/TvButton"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="左上" />
+                android:text="@string/corner_tl" />
 
             <Button
                 android:id="@+id/btn_bl"
                 style="@style/TvButton"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="左下" />
+                android:text="@string/corner_bl" />
 
             <Button
                 android:id="@+id/btn_tr"
                 style="@style/TvButton"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="右上" />
+                android:text="@string/corner_tr" />
 
             <Button
                 android:id="@+id/btn_br"
@@ -136,7 +144,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginEnd="0dp"
-                android:text="右下" />
+                android:text="@string/corner_br" />
         </LinearLayout>
 
         <LinearLayout
@@ -152,7 +160,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:minWidth="96dp"
-                android:text="左移" />
+                android:text="@string/nudge_left" />
 
             <Button
                 android:id="@+id/btn_right"
@@ -160,7 +168,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:minWidth="96dp"
-                android:text="右移" />
+                android:text="@string/nudge_right" />
 
             <Button
                 android:id="@+id/btn_up"
@@ -168,14 +176,14 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:minWidth="96dp"
-                android:text="上移" />
+                android:text="@string/nudge_up" />
 
             <Button
                 android:id="@+id/btn_center"
                 style="@style/TvButton"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="居中" />
+                android:text="@string/btn_center" />
 
             <Button
                 android:id="@+id/btn_down"
@@ -183,7 +191,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:minWidth="96dp"
-                android:text="下移" />
+                android:text="@string/nudge_down" />
 
             <Button
                 android:id="@+id/btn_step"
@@ -191,14 +199,14 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginEnd="0dp"
-                android:text="步长：8dp" />
+                android:text="@string/step_default" />
         </LinearLayout>
 
         <TextView
             style="@style/SectionTitle"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="显示样式" />
+            android:text="@string/section_style" />
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -210,21 +218,21 @@
                 style="@style/TvButton"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="字号 -" />
+                android:text="@string/btn_size_minus" />
 
             <Button
                 android:id="@+id/btn_size_plus"
                 style="@style/TvButton"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="字号 +" />
+                android:text="@string/btn_size_plus" />
 
             <Button
                 android:id="@+id/btn_bg"
                 style="@style/TvButton"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="背景：透明" />
+                android:text="@string/btn_bg_transparent" />
 
             <Button
                 android:id="@+id/btn_lock"
@@ -232,7 +240,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginEnd="0dp"
-                android:text="锁定位置：关" />
+                android:text="@string/btn_lock_off" />
 
         </LinearLayout>
 
@@ -240,7 +248,7 @@
             style="@style/SectionTitle"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="文字颜色" />
+            android:text="@string/section_color" />
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -249,9 +257,12 @@
             android:orientation="horizontal">
 
             <TextView
-                android:layout_width="64dp"
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="下行"
+                android:layout_marginEnd="12dp"
+                android:minWidth="64dp"
+                android:singleLine="true"
+                android:text="@string/label_down"
                 android:textColor="#FFB8C7D6"
                 android:textSize="15sp" />
 
@@ -270,9 +281,12 @@
             android:orientation="horizontal">
 
             <TextView
-                android:layout_width="64dp"
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="上行"
+                android:layout_marginEnd="12dp"
+                android:minWidth="64dp"
+                android:singleLine="true"
+                android:text="@string/label_up"
                 android:textColor="#FFB8C7D6"
                 android:textSize="15sp" />
 
