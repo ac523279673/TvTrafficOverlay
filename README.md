@@ -41,12 +41,12 @@
 
 ## 安装
 
-到本仓库的 **Releases** 页下载 `TvTrafficOverlay-v1.1.apk`（约 2.6 MB）。也可以自己编译，见文末「自己编译」。
+到本仓库的 **Releases** 页下载 `TvTrafficOverlay-v1.0.apk`（约 2.6 MB）。也可以自己编译，见文末「自己编译」。
 
 装法三种任选：
 
 1. **U 盘**：拷到 U 盘 → 插电视 → 用电视自带的文件管理器打开安装（需允许「安装未知来源应用」）。
-2. **adb**：`adb connect 电视IP:5555` → `adb install -r TvTrafficOverlay-v1.1.apk`
+2. **adb**：`adb connect 电视IP:5555` → `adb install -r TvTrafficOverlay-v1.0.apk`
 3. **电视助手类 App**（当贝助手、沙发管家等）推送安装。
 
 > Release 里的 APK 使用 Android 默认 debug 证书签名，仅适合自行安装。若要分发给他人或上架，请用自己的 keystore 重新签名。

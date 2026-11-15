@@ -41,12 +41,12 @@ The overlay itself (transparent, upload on the left, download on the right):
 
 ## Install
 
-Grab `TvTrafficOverlay-v1.1.apk` (about 2.6 MB) from the **Releases** page, or build it yourself (see below).
+Grab `TvTrafficOverlay-v1.0.apk` (about 2.6 MB) from the **Releases** page, or build it yourself (see below).
 
 Three ways to install:
 
 1. **USB drive**: copy the APK to a drive, plug it into the TV, open it with the built-in file manager (allow "install unknown apps").
-2. **adb**: `adb connect TV_IP:5555` then `adb install -r TvTrafficOverlay-v1.1.apk`
+2. **adb**: `adb connect TV_IP:5555` then `adb install -r TvTrafficOverlay-v1.0.apk`
 3. **TV assistant apps** such as Dangbei Assistant or Shafa Market.
 
 > The APK in Releases is signed with the default Android debug certificate and is meant for sideloading. If you redistribute it or publish it, sign it with your own keystore.
