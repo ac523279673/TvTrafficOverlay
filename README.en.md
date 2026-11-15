@@ -1,5 +1,10 @@
 # TV Traffic Overlay
 
+[![Build APK](https://github.com/ac523279673/TvTrafficOverlay/actions/workflows/build.yml/badge.svg)](https://github.com/ac523279673/TvTrafficOverlay/actions/workflows/build.yml)
+[![Release](https://img.shields.io/github/v/release/ac523279673/TvTrafficOverlay?label=release)](https://github.com/ac523279673/TvTrafficOverlay/releases/latest)
+[![License: MIT](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
+[![Android](https://img.shields.io/badge/Android-6.0%2B-3ddc84.svg)](https://developer.android.com)
+
 [简体中文](README.md) | **English**
 
 A live network speed overlay for Android TV and TV boxes. Fully transparent, always on top: see upload and download speed at a glance, and check per-app traffic usage.
@@ -130,7 +135,7 @@ app/src/main/res/
 
 ```bash
 # Requires JDK 17+ and an Android SDK (platform 34, build-tools 34.0.0)
-git clone <this repository>
+git clone https://github.com/ac523279673/TvTrafficOverlay.git
 cd TvTrafficOverlay
 echo "sdk.dir=/path/to/android-sdk" > local.properties
 ./gradlew assembleDebug
