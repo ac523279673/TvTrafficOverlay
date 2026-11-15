@@ -19,11 +19,20 @@ jobs:
           distribution: temurin
           java-version: '17'
 
-      - name: Set up Android SDK
-        uses: android-actions/setup-android@v3
-
+      # GitHub 的 ubuntu 镜像已预装 Android SDK（ANDROID_HOME/ANDROID_SDK_ROOT 已设置），
+      # 这里只补装本项目需要的 platform 与 build-tools。
+      # 不要再套 android-actions/setup-android：它内部会执行 `sdkmanager tools`，
+      # 而新版 cmdline-tools 已下架 `tools` 包，会直接报 "Failed to find package 'tools'"。
       - name: Install SDK packages
-        run: sdkmanager "platforms;android-34" "build-tools;34.0.0"
+        run: |
+          set -e
+          SDK_ROOT="${ANDROID_SDK_ROOT:-${ANDROID_HOME:-/usr/local/lib/android/sdk}}"
+          echo "SDK_ROOT=$SDK_ROOT"
+          SDKMANAGER="$(find "$SDK_ROOT/cmdline-tools" -maxdepth 3 -name sdkmanager -type f | head -1)"
+          echo "SDKMANAGER=$SDKMANAGER"
+          yes | "$SDKMANAGER" --licenses > /dev/null 2>&1 || true
+          "$SDKMANAGER" "platforms;android-34" "build-tools;34.0.0"
+          echo "sdk.dir=$SDK_ROOT" > local.properties
 
       - name: Build debug APK
         run: |

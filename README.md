@@ -41,7 +41,7 @@
 
 ## 安装
 
-到本仓库的 **Releases** 页下载 `TvTrafficOverlay-v1.0.apk`（约 2.6 MB）。也可以自己编译，见文末「自己编译」。
+到本仓库的 **Releases** 页下载 `TvTrafficOverlay-v1.0.apk`（约 2.4 MB）。也可以自己编译，见文末「自己编译」。
 
 装法三种任选：
 
@@ -137,7 +137,7 @@ echo "sdk.dir=/path/to/android-sdk" > local.properties
 
 `assembleRelease` 需要在 `app/build.gradle` 里补上自己的 signingConfig，仓库不包含任何签名材料。
 
-无第三方依赖，纯 framework 实现。APK 约 2.5 MB，其中字体占 3.4 MB（未压缩）。
+无第三方依赖，纯 framework 实现。APK 约 2.4 MB，其中字体占 3.4 MB（未压缩）。
 
 ## 许可证
 

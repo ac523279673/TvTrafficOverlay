@@ -41,7 +41,7 @@ The overlay itself (transparent, upload on the left, download on the right):
 
 ## Install
 
-Grab `TvTrafficOverlay-v1.0.apk` (about 2.6 MB) from the **Releases** page, or build it yourself (see below).
+Grab `TvTrafficOverlay-v1.0.apk` (about 2.4 MB) from the **Releases** page, or build it yourself (see below).
 
 Three ways to install:
 
