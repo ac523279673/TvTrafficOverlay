@@ -46,12 +46,14 @@
 
 ## 安装
 
-到本仓库的 **Releases** 页下载 `TvTrafficOverlay-v1.0.apk`（约 2.4 MB）。也可以自己编译，见文末「自己编译」。
+到本仓库的 **Releases** 页下载 `TvTrafficOverlay-v1.0-android4.apk`（约 2.4 MB）。也可以自己编译，见文末「自己编译」。
+
+> Releases 里有两个包：**`v1.0`** 只支持 Android 6.0+；**`v1.0-android4`** 是最低到 Android 4.0 的兼容版，一个包覆盖 4.0 到最新系统，老电视盒子装这个。两者包名相同、签名相同，可直接覆盖升级，设置不丢。
 
 装法三种任选：
 
 1. **U 盘**：拷到 U 盘 → 插电视 → 用电视自带的文件管理器打开安装（需允许「安装未知来源应用」）。
-2. **adb**：`adb connect 电视IP:5555` → `adb install -r TvTrafficOverlay-v1.0.apk`
+2. **adb**：`adb connect 电视IP:5555` → `adb install -r TvTrafficOverlay-v1.0-android4.apk`
 3. **电视助手类 App**（当贝助手、沙发管家等）推送安装。
 
 > Release 里的 APK 使用 Android 默认 debug 证书签名，仅适合自行安装。若要分发给他人或上架，请用自己的 keystore 重新签名。
@@ -131,6 +133,20 @@ adb shell appops set com.tvtraffic.overlay GET_USAGE_STATS allow
 - 应用排行以「已安装应用」为准逐个列出，所以不会漏包；反过来，没有对应已安装应用的 uid（内核线程、已卸载应用的残留、部分系统守护进程）不会出现在列表里。
 - Android 6.0 以下没有 `NetworkStatsManager`，应用排行只有本次开机数据；个别 4.x 机型内核根本没开 per-uid 统计（`getUidRxBytes()` 返回 `UNSUPPORTED`），此时所有应用都显示 0，实时速率仍然正常。
 - 多个应用共用同一个 uid（如 `android.uid.system`）时，它们的流量无法拆开，会各自显示同一份数值并标「共用 uid」，顶部合计已按 uid 去重，不会重复累加。
+
+## 更新日志
+
+**v1.0-android4**（兼容版）
+
+- 与 v1.0 同一份代码，最低支持版本从 Android 6.0 降到 **Android 4.0（API 14）**，老电视盒子可用
+- 4.x 走 `TYPE_PHONE` 悬浮窗与 Holo 主题，5.0+ 仍为 Material 与 `TYPE_APPLICATION_OVERLAY`
+- 应用流量排行在 6.0 以下退化为「本次开机以来」并在页面标明，时间范围按钮灰显
+- 低版本无「使用情况访问」，权限项显示灰色「无需授权」并隐藏授权按钮
+
+**v1.0**
+
+- 首个公开版本：实时上下行速率、四角/自由定位、按应用流量排行、中英双语
+- 要求 Android 6.0+
 
 ## 工程结构
 

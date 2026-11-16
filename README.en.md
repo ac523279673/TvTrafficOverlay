@@ -47,12 +47,14 @@ The overlay itself (transparent, upload on the left, download on the right):
 
 ## Install
 
-Grab `TvTrafficOverlay-v1.0.apk` (about 2.4 MB) from the **Releases** page, or build it yourself (see below).
+Grab `TvTrafficOverlay-v1.0-android4.apk` (about 2.4 MB) from the **Releases** page, or build it yourself (see below).
+
+> Releases ships two builds: **`v1.0`** requires Android 6.0+; **`v1.0-android4`** goes down to Android 4.0 and covers 4.0 through the latest release — use it for old TV boxes. Both share the same package name and signing key, so either installs over the other and keeps your settings.
 
 Three ways to install:
 
 1. **USB drive**: copy the APK to a drive, plug it into the TV, open it with the built-in file manager (allow "install unknown apps").
-2. **adb**: `adb connect TV_IP:5555` then `adb install -r TvTrafficOverlay-v1.0.apk`
+2. **adb**: `adb connect TV_IP:5555` then `adb install -r TvTrafficOverlay-v1.0-android4.apk`
 3. **TV assistant apps** such as Dangbei Assistant or Shafa Market.
 
 > The APK in Releases is signed with the default Android debug certificate and is meant for sideloading. If you redistribute it or publish it, sign it with your own keystore.
@@ -131,6 +133,20 @@ The ranking header on 4.x says "since boot only (Android 5.1 and older has no lo
 - The ranking is built from installed apps, so no package is missing; conversely, uids without an installed package (kernel threads, leftovers from uninstalled apps, some system daemons) do not appear.
 - Android 6.0 and older has no `NetworkStatsManager`; the ranking is limited to the current boot. On a few 4.x kernels `getUidRxBytes()` returns `UNSUPPORTED`, so every app shows 0 while live speed still works.
 - When several apps share a uid (e.g. `android.uid.system`) their traffic cannot be split; each shows the same number marked "shared uid", and the summary de-duplicates by uid so nothing is double counted.
+
+## Changelog
+
+**v1.0-android4** (legacy build)
+
+- Same code as v1.0, with the minimum lowered from Android 6.0 to **Android 4.0 (API 14)** for older TV boxes
+- 4.x uses a `TYPE_PHONE` overlay with the Holo theme; 5.0+ keeps Material and `TYPE_APPLICATION_OVERLAY`
+- Below 6.0 the per-app ranking falls back to "since boot" and says so; the range button is greyed out
+- Below 6.0 there is no usage-access switch, so the permission row shows a grey "not required" and hides the grant button
+
+**v1.0**
+
+- First public release: live up/down speed, corner or free positioning, per-app ranking, English and Chinese
+- Requires Android 6.0+
 
 ## Project layout
 
