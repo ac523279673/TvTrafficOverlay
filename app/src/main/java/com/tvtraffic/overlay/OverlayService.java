@@ -1,8 +1,6 @@
 package com.tvtraffic.overlay;
 
 import android.app.Notification;
-import android.app.NotificationChannel;
-import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.app.Service;
 import android.content.Context;
@@ -15,7 +13,6 @@ import android.os.Build;
 import android.os.Handler;
 import android.os.IBinder;
 import android.os.Looper;
-import android.provider.Settings;
 import android.util.DisplayMetrics;
 import android.util.TypedValue;
 import android.view.Display;
@@ -91,7 +88,7 @@ public class OverlayService extends Service {
         @Override
         public void run() {
             if (running) return;
-            if (!Settings.canDrawOverlays(OverlayService.this)) {
+            if (!Compat.canDrawOverlays(OverlayService.this)) {
                 prefs.setEnabled(false);
                 stopSelf();
                 return;
@@ -191,7 +188,7 @@ public class OverlayService extends Service {
             return START_NOT_STICKY;
         }
 
-        if (!Settings.canDrawOverlays(this)) {
+        if (!Compat.canDrawOverlays(this)) {
             prefs.setEnabled(false);
             stopSelf();
             return START_NOT_STICKY;
@@ -266,7 +263,11 @@ public class OverlayService extends Service {
             try {
                 Display d = wm.getDefaultDisplay();
                 if (d != null) {
-                    d.getRealMetrics(dm);
+                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR1) {
+                        d.getRealMetrics(dm);   // API 17+：含状态栏/导航栏的整块屏幕
+                    } else {
+                        d.getMetrics(dm);       // 4.0~4.2 只有这个，电视上一般就是全屏
+                    }
                     ok = dm.widthPixels > 0 && dm.heightPixels > 0;
                 }
             } catch (Throwable ignored) {
@@ -503,9 +504,9 @@ public class OverlayService extends Service {
             GradientDrawable g = new GradientDrawable();
             g.setColor(0x8C000000);
             g.setCornerRadius(dp(8));
-            container.setBackground(g);
+            Compat.setBg(container, g);
         } else {
-            container.setBackground(null);
+            Compat.setBg(container, null);
         }
         lastShowBg = showBg;
     }
@@ -722,18 +723,10 @@ public class OverlayService extends Service {
     // ---------------------------------------------------------------- 前台通知
 
     private void startAsForeground() {
-        NotificationManager nm = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O && nm != null) {
-            try {
-                NotificationChannel ch = new NotificationChannel(CHANNEL_ID,
-                        getString(R.string.noti_channel), NotificationManager.IMPORTANCE_MIN);
-                ch.setShowBadge(false);
-                ch.setSound(null, null);
-                ch.enableVibration(false);
-                ch.setLockscreenVisibility(Notification.VISIBILITY_SECRET);
-                nm.createNotificationChannel(ch);
-            } catch (Throwable ignored) {
-            }
+        // 渠道只在 8.0+ 需要。除了内部判版本，这里也挡一道，
+        // 让 4.x/5.x 上根本不加载 NotiCompat（Dalvik 对引用缺失类的类很敏感）
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            NotiCompat.ensure(this, CHANNEL_ID, getString(R.string.noti_channel));
         }
 
         PendingIntent pi = PendingIntent.getActivity(this, 0,
@@ -751,14 +744,19 @@ public class OverlayService extends Service {
                 .setContentText(getString(R.string.noti_text))
                 .setSmallIcon(android.R.drawable.stat_sys_download_done)
                 .setContentIntent(pi)
-                .setOngoing(true)
-                .setShowWhen(false);
+                .setOngoing(true);
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {
             b.setPriority(Notification.PRIORITY_MIN);
         }
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR1) {
+            b.setShowWhen(false);   // API 17+
+        }
 
         try {
-            startForeground(NOTI_ID, b.build());
+            // Notification.Builder#build 是 API 16 才有的，4.0/4.1 只能走 getNotification
+            Notification n = Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN
+                    ? b.build() : b.getNotification();
+            startForeground(NOTI_ID, n);
         } catch (Throwable ignored) {
             // 极少数 ROM 对通知有限制，服务本身仍然要在前台跑
         }

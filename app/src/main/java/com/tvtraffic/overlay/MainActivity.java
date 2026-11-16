@@ -1,7 +1,6 @@
 package com.tvtraffic.overlay;
 
 import android.app.Activity;
-import android.app.AppOpsManager;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.drawable.Drawable;
@@ -12,7 +11,6 @@ import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
-import android.os.Process;
 import android.provider.Settings;
 import android.view.KeyEvent;
 import android.view.View;
@@ -486,7 +484,7 @@ public class MainActivity extends Activity {
             btnToggle.postDelayed(this::updateUi, 400);
             return;
         }
-        if (!Settings.canDrawOverlays(this)) {
+        if (!Compat.canDrawOverlays(this)) {
             toast(R.string.toast_missing_overlay_perm);
             openOverlaySettings();
             return;
@@ -503,17 +501,32 @@ public class MainActivity extends Activity {
     }
 
     private void openOverlaySettings() {
+        Intent i;
         try {
-            Intent i = new Intent(Settings.ACTION_MANAGE_OVERLAY_PERMISSION,
-                    Uri.parse("package:" + getPackageName()));
-            startActivity(i);
-            toast(R.string.toast_open_overlay_page);
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                i = new Intent(Settings.ACTION_MANAGE_OVERLAY_PERMISSION,
+                        Uri.parse("package:" + getPackageName()));
+                startActivity(i);
+                toast(R.string.toast_open_overlay_page);
+            } else {
+                // Android 6.0 以下没有悬浮窗授权页，权限在安装时就给了，
+                // 设置页只用来提供「强行停止 / 卸载」之类的操作
+                i = new Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS,
+                        Uri.parse("package:" + getPackageName()));
+                startActivity(i);
+                toast(R.string.toast_open_app_page);
+            }
         } catch (Exception e) {
             toast(R.string.toast_no_settings_page);
         }
     }
 
     private void openUsageSettings() {
+        if (Compat.isLegacyUsage()) {
+            // 6.0 以下没有这个开关，也用不到它
+            toast(R.string.toast_usage_legacy);
+            return;
+        }
         try {
             startActivity(new Intent(Settings.ACTION_USAGE_ACCESS_SETTINGS));
             toast(R.string.toast_open_usage_page);
@@ -524,32 +537,34 @@ public class MainActivity extends Activity {
 
     // ------------------------------------------------------------ 状态
 
+    /**
+     * Android 6.0 以下没有「使用情况访问」，NetworkStatsManager 也不存在，
+     * 排行只能用 TrafficStats 的本次开机数据，此时视为「不需要授权」。
+     */
     private boolean hasUsageAccess() {
-        try {
-            AppOpsManager aom = (AppOpsManager) getSystemService(Context.APP_OPS_SERVICE);
-            int mode;
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
-                mode = aom.unsafeCheckOpNoThrow(AppOpsManager.OPSTR_GET_USAGE_STATS,
-                        Process.myUid(), getPackageName());
-            } else {
-                mode = aom.checkOpNoThrow(AppOpsManager.OPSTR_GET_USAGE_STATS,
-                        Process.myUid(), getPackageName());
-            }
-            return mode == AppOpsManager.MODE_ALLOWED;
-        } catch (Throwable t) {
-            return false;
-        }
+        if (Compat.isLegacyUsage()) return true;
+        return UsageAccess.granted(this);
     }
 
     private void updateUi() {
-        boolean overlayOk = Settings.canDrawOverlays(this);
+        boolean overlayOk = Compat.canDrawOverlays(this);
         boolean usageOk = hasUsageAccess();
 
         tvOverlayPerm.setText(getString(R.string.perm_overlay_fmt, grantText(overlayOk)));
         tvOverlayPerm.setTextColor(overlayOk ? 0xFF6EE7A8 : 0xFFFF7B72);
 
-        tvUsagePerm.setText(getString(R.string.perm_usage_fmt, grantText(usageOk)));
-        tvUsagePerm.setTextColor(usageOk ? 0xFF6EE7A8 : 0xFFFF7B72);
+        boolean usageNeeded = !Compat.isLegacyUsage();
+        tvUsagePerm.setText(getString(R.string.perm_usage_fmt,
+                usageNeeded ? grantText(usageOk) : getString(R.string.status_not_needed)));
+        if (!usageNeeded) {
+            tvUsagePerm.setTextColor(0xFF8FA3B8);
+        } else {
+            tvUsagePerm.setTextColor(usageOk ? 0xFF6EE7A8 : 0xFFFF7B72);
+        }
+        View grantUsage = findViewById(R.id.btn_grant_usage);
+        if (grantUsage != null) {
+            grantUsage.setVisibility(usageNeeded ? View.VISIBLE : View.GONE);
+        }
 
         boolean on = OverlayService.running || prefs.enabled();
         btnToggle.setText(on ? R.string.btn_overlay_on : R.string.btn_overlay_off);
@@ -600,7 +615,7 @@ public class MainActivity extends Activity {
             dot.setTag(color);
             dot.setFocusable(true);
             dot.setClickable(true);
-            dot.setBackground(dotBackground(color, color == selected));
+            Compat.setBg(dot, dotBackground(color, color == selected));
             dot.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
@@ -617,7 +632,7 @@ public class MainActivity extends Activity {
         for (int i = 0; i < row.getChildCount(); i++) {
             View v = row.getChildAt(i);
             int color = (Integer) v.getTag();
-            v.setBackground(dotBackground(color, color == selected));
+            Compat.setBg(v, dotBackground(color, color == selected));
         }
     }
 

@@ -13,6 +13,7 @@ import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import java.text.Collator;
 import java.text.SimpleDateFormat;
@@ -102,10 +103,20 @@ public class AppUsageActivity extends Activity {
         });
 
         btnRange.setOnClickListener(v -> {
+            if (Compat.isLegacyUsage()) {
+                // 4.x 没有 NetworkStatsManager，切范围也查不出东西
+                toastLegacy();
+                return;
+            }
             mode = (mode + 1) % 3;
             updateRangeButton();
             reload();
         });
+        if (Compat.isLegacyUsage()) {
+            mode = MODE_BOOT;
+            btnRange.setEnabled(false);
+            btnRange.setAlpha(0.6f);
+        }
         findViewById(R.id.btn_back).setOnClickListener(v -> finish());
 
         updateRangeButton();
@@ -249,20 +260,20 @@ public class AppUsageActivity extends Activity {
 
                 switch (sort) {
                     case SORT_TRAFFIC_ASC: {
-                        int c = Long.compare(a.total(), b.total());
+                        int c = Compat.cmp(a.total(), b.total());
                         return c != 0 ? c : nameOf(a).compareToIgnoreCase(nameOf(b));
                     }
                     case SORT_NAME_ASC: {
                         int c = collator.compare(nameOf(a), nameOf(b));
-                        return c != 0 ? c : Long.compare(b.total(), a.total());
+                        return c != 0 ? c : Compat.cmp(b.total(), a.total());
                     }
                     case SORT_NAME_DESC: {
                         int c = collator.compare(nameOf(b), nameOf(a));
-                        return c != 0 ? c : Long.compare(b.total(), a.total());
+                        return c != 0 ? c : Compat.cmp(b.total(), a.total());
                     }
                     case SORT_TRAFFIC_DESC:
                     default: {
-                        int c = Long.compare(b.total(), a.total());
+                        int c = Compat.cmp(b.total(), a.total());
                         return c != 0 ? c : collator.compare(nameOf(a), nameOf(b));
                     }
                 }
@@ -289,12 +300,23 @@ public class AppUsageActivity extends Activity {
         }
         String from = new SimpleDateFormat("MM-dd HH:mm", Locale.getDefault())
                 .format(new Date(rangeStart));
-        String source = getString(AppUsageRepository.lastFromSystemStats
-                ? R.string.source_system : R.string.source_fallback);
+        int sourceRes;
+        if (AppUsageRepository.lastFromSystemStats) {
+            sourceRes = R.string.source_system;
+        } else if (Compat.isLegacyUsage()) {
+            sourceRes = R.string.source_legacy;
+        } else {
+            sourceRes = R.string.source_fallback;
+        }
+        String source = getString(sourceRes);
         tvSummary.setText(getString(R.string.summary_fmt, from, data.size(), withTraffic,
                 Fmt.volume(rx), Fmt.volume(tx), Fmt.volume(rx + tx), source));
         // 兜底数据明显不全，用橙色提示，避免误以为应用真的没跑流量
         tvSummary.setTextColor(AppUsageRepository.lastFromSystemStats ? 0xFF7E93A8 : 0xFFFFB74D);
+    }
+
+    private void toastLegacy() {
+        Toast.makeText(this, R.string.toast_usage_legacy, Toast.LENGTH_SHORT).show();
     }
 
     // ------------------------------------------------------------ 应用详情

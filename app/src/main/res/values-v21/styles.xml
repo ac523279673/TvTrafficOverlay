@@ -1,0 +1,7 @@
+<resources>
+    <!-- Android 5.0+ 用 Material 主题，观感与系统对话框一致 -->
+    <style name="AppTheme" parent="@android:style/Theme.Material.NoActionBar">
+        <item name="android:windowBackground">#FF0E1218</item>
+        <item name="android:colorAccent">#FF4FC3F7</item>
+    </style>
+</resources>

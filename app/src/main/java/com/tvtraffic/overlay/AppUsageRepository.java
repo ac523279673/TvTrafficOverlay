@@ -1,12 +1,9 @@
 package com.tvtraffic.overlay;
 
-import android.app.usage.NetworkStats;
-import android.app.usage.NetworkStatsManager;
 import android.content.Context;
 import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageManager;
 import android.graphics.drawable.Drawable;
-import android.net.ConnectivityManager;
 import android.net.TrafficStats;
 import android.os.Build;
 
@@ -115,7 +112,7 @@ public final class AppUsageRepository {
         Collections.sort(list, new Comparator<AppUsage>() {
             @Override
             public int compare(AppUsage a, AppUsage b) {
-                int c = Long.compare(b.total(), a.total());
+                int c = Compat.cmp(b.total(), a.total());
                 if (c != 0) return c;
                 return a.label.compareToIgnoreCase(b.label);
             }
@@ -149,50 +146,14 @@ public final class AppUsageRepository {
         return d;
     }
 
+    /** 6.0+ 才有的系统级统计，真正的查询在 NetworkStatsQuery 里 */
     private static Map<Integer, long[]> queryByUid(Context ctx, long start, long end) {
-        Map<Integer, long[]> map = new HashMap<>();
-        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.M) return map;
-
-        NetworkStatsManager nsm =
-                (NetworkStatsManager) ctx.getSystemService(Context.NETWORK_STATS_SERVICE);
-        if (nsm == null) return map;
-
-        // 电视上主要是 Wi-Fi 和以太网，移动网顺带查一次
-        int[] types = new int[]{
-                ConnectivityManager.TYPE_WIFI,
-                ConnectivityManager.TYPE_MOBILE,
-                9 /* TYPE_ETHERNET，常量在部分 SDK 中不可见 */
-        };
-
-        for (int type : types) {
-            NetworkStats stats = null;
-            try {
-                stats = nsm.querySummary(type, null, start, end);
-                if (stats == null) continue;
-                NetworkStats.Bucket bucket = new NetworkStats.Bucket();
-                while (stats.hasNextBucket()) {
-                    stats.getNextBucket(bucket);
-                    int uid = bucket.getUid();
-                    long[] v = map.get(uid);
-                    if (v == null) {
-                        v = new long[2];
-                        map.put(uid, v);
-                    }
-                    v[0] += bucket.getRxBytes();
-                    v[1] += bucket.getTxBytes();
-                }
-            } catch (Throwable ignored) {
-                // 某些机型/权限不足会抛异常，跳过该网络类型
-            } finally {
-                if (stats != null) {
-                    try {
-                        stats.close();
-                    } catch (Throwable ignored) {
-                    }
-                }
-            }
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.M) return new HashMap<>();
+        try {
+            return NetworkStatsQuery.query(ctx, start, end);
+        } catch (Throwable t) {
+            return new HashMap<>();
         }
-        return map;
     }
 
     /** 无使用情况权限时的兜底：只管本次开机以来的累计流量 */

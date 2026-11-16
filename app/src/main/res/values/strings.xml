@@ -13,6 +13,7 @@
     <string name="perm_usage_fmt">Traffic stats permission: %1$s</string>
     <string name="status_granted">granted</string>
     <string name="status_denied">not granted</string>
+    <string name="status_not_needed">not required</string>
 
     <string name="btn_overlay_on">Hide overlay</string>
     <string name="btn_overlay_off">Show overlay</string>
@@ -63,6 +64,8 @@
     <string name="toast_open_overlay_page">Turn on “Display over other apps”</string>
     <string name="toast_open_usage_page">Find this app and allow usage access</string>
     <string name="toast_no_settings_page">This device has no such settings page, grant it with adb (see below)</string>
+    <string name="toast_open_app_page">Opened app settings (on Android 6.0 and older the overlay permission is granted at install)</string>
+    <string name="toast_usage_legacy">Usage access needs Android 6.0+; the ranking will only show traffic since boot</string>
     <string name="toast_arrange">Left / Right to move, OK to save, Back to cancel</string>
 
     <string name="adb_hint_fmt">TVs and boxes usually have no “Display over other apps” or “Usage access” screen.\nRun these two commands from a computer on the same network (enable ADB debugging first):\n\nadb connect TV_IP:5555\nadb shell appops set %1$s SYSTEM_ALERT_WINDOW allow\nadb shell appops set %1$s GET_USAGE_STATS allow\n\nCome back to this screen and both lines turn green.</string>
@@ -86,6 +89,7 @@
     <string name="summary_fmt">Since %1$s    ·    %2$d apps (%3$d with traffic)    ·    Down %4$s    Up %5$s    ·    Total %6$s    ·    %7$s</string>
     <string name="source_system">system stats</string>
     <string name="source_fallback">since boot only (grant usage access)</string>
+    <string name="source_legacy">since boot only (Android 5.1 and older has no long-term stats)</string>
     <string name="load_failed_fmt">Read failed: %1$s</string>
 
     <string name="dialog_close">Close</string>

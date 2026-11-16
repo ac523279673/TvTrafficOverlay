@@ -1,10 +1,16 @@
 <resources>
-    <style name="AppTheme" parent="@android:style/Theme.Material.NoActionBar">
+    <!--
+      基础主题走 Holo（API 11+），Android 4.0（API 14）能直接用。
+      Material 主题是 API 21 才有的，放在 values-v21/styles.xml 里覆盖。
+      界面控件都自带背景与配色，父主题主要影响 AlertDialog 这类系统控件的观感。
+    -->
+    <style name="AppTheme" parent="@android:style/Theme.Holo.NoActionBar">
         <item name="android:windowBackground">#FF0E1218</item>
-        <item name="android:colorAccent">#FF4FC3F7</item>
     </style>
 
-    <style name="TvButton" parent="@android:style/Widget.Material.Button">
+    <!-- 父样式用最朴素的 Widget.Button：背景、文字色、内边距都由这里指定，
+         避免 Material 基类带来 ripple / elevation 之类的东西 -->
+    <style name="TvButton" parent="@android:style/Widget.Button">
         <item name="android:background">@drawable/bg_btn</item>
         <item name="android:textColor">#FFE8F1F8</item>
         <item name="android:textSize">16sp</item>
@@ -13,16 +19,15 @@
         <item name="android:paddingRight">20dp</item>
         <item name="android:paddingTop">12dp</item>
         <item name="android:paddingBottom">12dp</item>
-        <item name="android:layout_marginEnd">12dp</item>
+        <item name="android:layout_marginRight">12dp</item>
         <item name="android:focusable">true</item>
-        <item name="android:stateListAnimator">@null</item>
     </style>
 
     <!-- 排序菜单里的选项，直接点选 -->
     <style name="SortChip">
         <item name="android:layout_width">wrap_content</item>
         <item name="android:layout_height">wrap_content</item>
-        <item name="android:layout_marginEnd">10dp</item>
+        <item name="android:layout_marginRight">10dp</item>
         <item name="android:background">@drawable/sel_chip</item>
         <item name="android:clickable">true</item>
         <item name="android:focusable">true</item>

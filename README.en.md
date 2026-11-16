@@ -9,7 +9,7 @@
 
 A live network speed overlay for Android TV and TV boxes. Fully transparent, always on top: see upload and download speed at a glance, and check per-app traffic usage.
 
-Pure Android framework, no third-party dependencies. Source is MIT licensed. The UI ships in English and Simplified Chinese, following the system language.
+Pure Android framework, no third-party dependencies. Source is MIT licensed. The UI ships in English and Simplified Chinese, following the system language. **Runs on Android 4.0 (API 14) and newer**, so old TV boxes are supported too.
 
 ## Screenshots
 
@@ -43,6 +43,7 @@ The overlay itself (transparent, upload on the left, download on the right):
 | Global font | Bundled MiSans for both the overlay and the settings screen; digits use a fixed-width measurement so the readout does not jitter |
 | Position lock | Prevents accidental drags |
 | Bilingual | All UI strings live in resources: `values-zh` for Simplified Chinese, English as the default. Chinese system language gets Chinese, everything else gets English |
+| Legacy support | Works from Android 4.0 (API 14): 4.x uses a `TYPE_PHONE` overlay with the Holo theme, 5.0+ switches to Material and `TYPE_APPLICATION_OVERLAY` |
 
 ## Install
 
@@ -56,7 +57,7 @@ Three ways to install:
 
 > The APK in Releases is signed with the default Android debug certificate and is meant for sideloading. If you redistribute it or publish it, sign it with your own keystore.
 
-Requires Android 6.0 (API 23) or newer. Works on TVs, boxes and phones.
+Requires Android 4.0 (API 14) or newer. Works on TVs, boxes and phones. On Android 6.0 and older the per-app ranking only covers the current boot — see [Compatibility](#compatibility-android-40--60).
 
 ## Granting permissions (important)
 
@@ -74,6 +75,8 @@ adb shell appops set com.tvtraffic.overlay GET_USAGE_STATS allow
 Come back to the app and both status lines turn green.
 
 Some devices (Xiaomi TVs, some projectors) do expose "App permissions → Display over other apps" in settings; if yours does, you can skip the first command.
+
+> **Android 6.0 and older does not need this step**: the overlay permission is granted at install and there is no usage-access switch. The settings screen shows a grey "not required" and hides the grant button.
 
 ## Usage
 
@@ -103,7 +106,22 @@ Some devices (Xiaomi TVs, some projectors) do expose "App permissions → Displa
 - **Package visibility**: Android 11+ restricts `getInstalledApplications()` / `getPackagesForUid()` unless `QUERY_ALL_PACKAGES` is declared, which used to drop entries from the list.
 - **List contents**: driven by `getInstalledApplications()` (disabled packages skipped), traffic looked up by uid. When several packages share a uid, each gets its own row marked "shared uid". Icons and labels are cached in memory so the 10 s refresh does not re-parse APKs.
 - **Sorting**: names use `Collator.getInstance()` (follows the system language), so Chinese sorts by pinyin rather than UTF-16 code points. Sorting only affects presentation; it does not re-query.
+- **Legacy support**: `minSdk 14`. Android 4.0–4.4 still runs Dalvik, where any reference to a class the platform does not have can throw `VerifyError`, so `AppOpsManager` (19+), `NetworkStatsManager` (23+) and `NotificationChannel` (26+) each live in their own class (`UsageAccess`, `NetworkStatsQuery`, `NotiCompat`) that is never loaded on old versions; scattered newer methods such as `Long.compare` (19+) and `View.setBackground` (16+) are funnelled through `Compat`.
 - **Localisation**: every UI string lives in `strings.xml` — English in `values/`, Simplified Chinese in `values-zh/`. English labels are longer, and the first button row overflows the available width on a 1280×720 TV (about 757 dp), so that row is wrapped in a `HorizontalScrollView` that follows focus.
+
+## Compatibility (Android 4.0 ~ 6.0)
+
+Old TV boxes (4.0–4.4) and modern systems use two different sets of APIs:
+
+| Capability | Android 4.0 ~ 5.1 (API 14–22) | Android 6.0+ (API 23+) |
+|---|---|---|
+| Live speed | ✅ `TrafficStats` kernel counters, no permission | ✅ Same |
+| Overlay | ✅ `TYPE_PHONE`, permission granted at install | ✅ `TYPE_APPLICATION_OVERLAY`, must be granted in settings |
+| Theme | Holo (`values/`) | Material (`values-v21/`) |
+| Per-app ranking | ⚠️ Only `TrafficStats.getUidRxBytes()`, i.e. **since boot**; some 4.x kernels do not track per-uid counters and show 0 | ✅ `NetworkStatsManager`, 7-day / 30-day ranges survive reboots |
+| Range button | Greyed out, fixed to "Since boot" | Three ranges, switchable |
+
+The ranking header on 4.x says "since boot only (Android 5.1 and older has no long-term stats)" — that is expected, not a bug.
 
 ## Known limitations
 
@@ -111,6 +129,7 @@ Some devices (Xiaomi TVs, some projectors) do expose "App permissions → Displa
 - The speed shown is the **whole device** (all interfaces summed), not per app. Per-app live speed would need high-frequency `NetworkStatsManager` queries — too much power and latency for little gain.
 - Ethernet: on some TVs the wired interface is missing from NetworkStats, so the ranking may under-report wired traffic, while live speed stays correct (kernel counters).
 - The ranking is built from installed apps, so no package is missing; conversely, uids without an installed package (kernel threads, leftovers from uninstalled apps, some system daemons) do not appear.
+- Android 6.0 and older has no `NetworkStatsManager`; the ranking is limited to the current boot. On a few 4.x kernels `getUidRxBytes()` returns `UNSUPPORTED`, so every app shows 0 while live speed still works.
 - When several apps share a uid (e.g. `android.uid.system`) their traffic cannot be split; each shows the same number marked "shared uid", and the summary de-duplicates by uid so nothing is double counted.
 
 ## Project layout
@@ -126,9 +145,15 @@ app/src/main/java/com/tvtraffic/overlay/
   Fmt.java                   Speed / volume formatting
   Prefs.java                 Preferences
   BootReceiver.java          Auto start
+  Compat.java                Legacy shims (overlay permission / setBackground / Long.compare)
+  UsageAccess.java           Usage-access check (AppOpsManager, API 19+, isolated)
+  NetworkStatsQuery.java     NetworkStatsManager queries (API 23+, isolated)
+  NotiCompat.java            Notification channel (API 26+, isolated)
 app/src/main/res/
   values/strings.xml         English (default)
   values-zh/strings.xml      Simplified Chinese
+  values/styles.xml          Base theme (Holo, API 14+)
+  values-v21/styles.xml      Material theme for Android 5.0+
 ```
 
 ## Building

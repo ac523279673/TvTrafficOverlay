@@ -3,7 +3,6 @@ package com.tvtraffic.overlay;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
-import android.provider.Settings;
 
 /**
  * 开机自启：开机完成后（或本应用升级后）自动恢复悬浮窗。
@@ -15,7 +14,7 @@ public class BootReceiver extends BroadcastReceiver {
     public void onReceive(Context context, Intent intent) {
         Prefs prefs = new Prefs(context);
         if (!prefs.autoStart() || !prefs.enabled()) return;
-        if (!Settings.canDrawOverlays(context)) return;
+        if (!Compat.canDrawOverlays(context)) return;
 
         String action = intent == null || intent.getAction() == null ? "" : intent.getAction();
         boolean afterBoot = Intent.ACTION_BOOT_COMPLETED.equals(action)

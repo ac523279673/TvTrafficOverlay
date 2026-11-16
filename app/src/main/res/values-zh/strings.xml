@@ -13,6 +13,7 @@
     <string name="perm_usage_fmt">应用流量统计权限：%1$s</string>
     <string name="status_granted">已授权</string>
     <string name="status_denied">未授权</string>
+    <string name="status_not_needed">无需授权</string>
 
     <string name="btn_overlay_on">关闭悬浮窗</string>
     <string name="btn_overlay_off">开启悬浮窗</string>
@@ -63,6 +64,8 @@
     <string name="toast_open_overlay_page">请打开「允许显示在其他应用上层」</string>
     <string name="toast_open_usage_page">请找到本应用并允许访问使用记录</string>
     <string name="toast_no_settings_page">本机没有该设置页，请用 adb 授权（见下方说明）</string>
+    <string name="toast_open_app_page">已打开应用设置（Android 6.0 以下悬浮窗权限在安装时授予）</string>
+    <string name="toast_usage_legacy">Android 6.0 以下没有「使用情况访问」，排行只统计本次开机以来的流量</string>
     <string name="toast_arrange">左右键调整位置，OK 完成，返回键取消</string>
 
     <string name="adb_hint_fmt">电视/盒子通常没有「显示在其他应用上层」和「使用情况访问」的设置入口，\n用同一局域网的电脑执行下面两条命令即可（需先开启 ADB 调试）：\n\nadb connect 电视IP:5555\nadb shell appops set %1$s SYSTEM_ALERT_WINDOW allow\nadb shell appops set %1$s GET_USAGE_STATS allow\n\n授予后回到本页，状态会变成「已授权」。</string>
@@ -86,6 +89,7 @@
     <string name="summary_fmt">统计起点 %1$s　·　共 %2$d 个应用（%3$d 个有流量）　·　下行 %4$s　上行 %5$s　·　合计 %6$s　·　%7$s</string>
     <string name="source_system">系统统计</string>
     <string name="source_fallback">仅本次开机（建议授予使用情况访问权限）</string>
+    <string name="source_legacy">仅本次开机（Android 5.1 及以下没有跨重启统计）</string>
     <string name="load_failed_fmt">读取失败：%1$s</string>
 
     <string name="dialog_close">关闭</string>

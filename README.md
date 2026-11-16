@@ -9,7 +9,7 @@
 
 安卓电视 / 电视盒子用的实时网速悬浮窗。背景完全透明、置顶显示，随时看上下行速率，并可按应用统计流量。
 
-纯 Android framework 实现，无任何第三方依赖；源码以 MIT 协议开源。界面中英双语，随系统语言自动切换。
+纯 Android framework 实现，无任何第三方依赖；源码以 MIT 协议开源。界面中英双语，随系统语言自动切换。**最低支持 Android 4.0（API 14）**，老电视盒子也能装。
 
 ## 界面预览
 
@@ -42,6 +42,7 @@
 | 全局字体 | 内置 MiSans，悬浮窗与设置页统一；数字区锁定宽度，读数跳动时不会左右抖 |
 | 位置锁定 | 防止误触改位置 |
 | 中英双语 | 界面文案全部走资源，中文放 `values-zh`、英文为默认；系统语言是中文就用中文，其它语言用英文 |
+| 老系统兼容 | Android 4.0（API 14）起可用：4.x 用 `TYPE_PHONE` 悬浮窗 + Holo 主题，5.0+ 自动换成 Material 与 `TYPE_APPLICATION_OVERLAY` |
 
 ## 安装
 
@@ -55,7 +56,7 @@
 
 > Release 里的 APK 使用 Android 默认 debug 证书签名，仅适合自行安装。若要分发给他人或上架，请用自己的 keystore 重新签名。
 
-要求：Android 6.0（API 23）及以上，电视/盒子/手机都能装。
+要求：Android 4.0（API 14）及以上，电视/盒子/手机都能装。Android 6.0 以下的应用流量排行只能看「本次开机」，原因见下方[兼容性](#兼容性android-40--60)。
 
 ## 首次使用必须授权（关键）
 
@@ -73,6 +74,8 @@ adb shell appops set com.tvtraffic.overlay GET_USAGE_STATS allow
 授权完回到 App 主界面，两行状态会变成绿色的「已授权」。
 
 部分机型（小米电视、部分投影）在系统设置里有「应用权限 → 显示悬浮窗」，能点的就直接点，省掉第一条命令。
+
+> **Android 6.0 以下不需要这一步**：悬浮窗权限在安装时就已授予，系统也没有「使用情况访问」。主界面会把这一项显示成灰色的「无需授权」，授权按钮自动隐藏。
 
 ## 使用
 
@@ -103,7 +106,22 @@ adb shell appops set com.tvtraffic.overlay GET_USAGE_STATS allow
 - **包可见性**：Android 11+ 有包可见性限制，未声明 `QUERY_ALL_PACKAGES` 时 `getInstalledApplications()` / `getPackagesForUid()` 只返回部分应用，列表会缺项。已在清单里声明该权限。
 - **列表构成**：以 `getInstalledApplications()` 为准逐包列出（跳过已停用），流量按 uid 从 NetworkStats 取；一个 uid 多个包时每个包各占一行，标注「共用 uid」。图标与名称做了内存缓存，避免 10 秒自动刷新时反复解析 APK。
 - **排序**：名称排序用 `Collator.getInstance()`（跟随系统语言），中文按拼音而不是 UTF-16 码位；排序只影响展示，不重新查询。
+- **低版本兼容**：`minSdk 14`。4.0~4.4 还是 Dalvik，类里只要出现当前系统没有的类型，调用时就会 `VerifyError`，所以 `AppOpsManager`(19+)、`NetworkStatsManager`(23+)、`NotificationChannel`(26+) 各自单独成类（`UsageAccess` / `NetworkStatsQuery` / `NotiCompat`），并保证低版本根本不加载；`Long.compare`(19+)、`View.setBackground`(16+) 这类散落的方法统一收敛到 `Compat`。
 - **多语言**：所有界面文案都在 `strings.xml`，默认资源是英文、`values-zh` 是简体中文，Android 按系统语言自动选。英文比中文长，首行按钮在 1280×720 的电视上会超出可用宽度，所以那一行套了 `HorizontalScrollView`，焦点走到哪就滚到哪。
+
+## 兼容性（Android 4.0 ~ 6.0）
+
+老电视盒子（4.0~4.4）和新系统走的是两套 API，功能差异如下：
+
+| 能力 | Android 4.0 ~ 5.1（API 14~22） | Android 6.0+（API 23+） |
+|---|---|---|
+| 实时速率 | ✅ `TrafficStats` 内核计数，无需权限 | ✅ 同左 |
+| 悬浮窗 | ✅ `TYPE_PHONE`，安装即授予权限 | ✅ `TYPE_APPLICATION_OVERLAY`，需在设置里授权 |
+| 主题 | Holo（`values/`） | Material（`values-v21/`） |
+| 应用流量排行 | ⚠️ 只有 `TrafficStats.getUidRxBytes()`，即**本次开机以来**；部分 4.x 机型内核不统计 per-uid，会显示 0 | ✅ `NetworkStatsManager`，可查近 7 天 / 近 30 天，重启不丢 |
+| 时间范围按钮 | 灰显，固定「本次开机」 | 三种范围可切 |
+
+4.x 上的排行页顶部会标明「仅本次开机（Android 5.1 及以下没有跨重启统计）」，不是 bug。
 
 ## 已知限制
 
@@ -111,6 +129,7 @@ adb shell appops set com.tvtraffic.overlay GET_USAGE_STATS allow
 - 速率是**整机合计**（所有网卡加总），不是单个 App 的速率。要单 App 实时速率需要 `NetworkStatsManager` 高频查询，功耗和延迟都不划算，所以没做。
 - 有线网卡：个别电视的以太网统计没进 NetworkStats，应用排行里可能缺失，但实时速率仍然正确（来自内核计数）。
 - 应用排行以「已安装应用」为准逐个列出，所以不会漏包；反过来，没有对应已安装应用的 uid（内核线程、已卸载应用的残留、部分系统守护进程）不会出现在列表里。
+- Android 6.0 以下没有 `NetworkStatsManager`，应用排行只有本次开机数据；个别 4.x 机型内核根本没开 per-uid 统计（`getUidRxBytes()` 返回 `UNSUPPORTED`），此时所有应用都显示 0，实时速率仍然正常。
 - 多个应用共用同一个 uid（如 `android.uid.system`）时，它们的流量无法拆开，会各自显示同一份数值并标「共用 uid」，顶部合计已按 uid 去重，不会重复累加。
 
 ## 工程结构
@@ -126,6 +145,13 @@ app/src/main/java/com/tvtraffic/overlay/
   Fmt.java                   速率/流量格式化
   Prefs.java                 配置项
   BootReceiver.java          开机自启
+  Compat.java                低版本兼容封装（悬浮窗权限 / setBackground / Long.compare）
+  UsageAccess.java           「使用情况访问」检查（AppOpsManager，API 19+，单独成类）
+  NetworkStatsQuery.java     NetworkStatsManager 查询（API 23+，单独成类）
+  NotiCompat.java            通知渠道（API 26+，单独成类）
+app/src/main/res/
+  values/styles.xml          基础主题（Holo，API 14 起可用）
+  values-v21/styles.xml      Android 5.0+ 换成 Material
 ```
 
 ## 自己编译
